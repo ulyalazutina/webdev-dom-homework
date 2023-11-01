@@ -1,17 +1,20 @@
 // "use strict";
 let isLoading = false;
 
+document.querySelector('.container').style.display = "none";
+
 //Нашла форму добавления комментариев
 const formAddComm = document.querySelector('.add-form');
+
 //рендер формы для написания комментария
 const renderForm = () => {
   if (isLoading === true) {
-    console.log(isLoading);
+    // console.log(isLoading);
     formAddComm.innerHTML =
       ` <div>Комментарий добавляется </div>
     `
   } else {
-    console.log(isLoading);
+    // console.log(isLoading);
     formAddComm.innerHTML = ` <input
     type="text"
     class="add-form-name"
@@ -31,6 +34,16 @@ const renderForm = () => {
   }
 }
 renderForm();
+
+// Функция для имитации запросов в API
+// Не смотрите особо на внутренности, мы разберемся с этим позже
+function delay(interval = 300) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, interval);
+  });
+}
 
 //Нашла блок с комментариями и сами комментарии
 const blockComments = document.querySelector('.comments');
@@ -54,16 +67,36 @@ const initLikeButtonsListener = () => {
   for (const likeButton of likeButtons) {
     likeButton.addEventListener('click', (event) => {
       event.stopPropagation();
+      //функция для проверки на состояние загрузки и присваивание класса с анимацией
+      const loadingLike = () => {
+        if (isLikeLoading) {
+          return likeButton.classList.add('-loading-like');
+        } else {
+          return likeButton.classList.remove('-loading-like');
+        }
+      }
+      //состояние загрузки
+      let isLikeLoading = true;
+      loadingLike();
       //Присвоила индексу весь элемент массива
       const index = likeButton.dataset.index;
-      if (comments[index].isLike) {
-        comments[index].isLike = false;
-        comments[index].likes -= 1;
-      } else {
-        comments[index].isLike = true;
-        comments[index].likes += 1;
-      }
-      renderComments();
+      delay(2000).then(() => {
+        if (comments[index].isLike) {
+          comments[index].isLike = false;
+          comments[index].likes -= 1;
+        } else {
+          comments[index].isLike = true;
+          comments[index].likes += 1;
+        }
+
+      })
+        .then(() => {
+          isLikeLoading = false;
+          return loadingLike();
+        })
+        .then(() => {
+          return renderComments();
+        });
     });
   }
 }
@@ -124,7 +157,7 @@ const initUpdateCommentListener = () => {
 //функция для работы со временем
 const formatDate = (dateString) => {
   //Работа со временем
-  const datePublish = new Date(); //создание времени
+  const datePublish = new Date(dateString); //создание времени
   const months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']; //Правильная расстановка месяцей
   let dayPublish = datePublish.getDate(); //Получение дня
   let monthPublish = months[datePublish.getMonth()]; //Получение месяца
@@ -146,28 +179,27 @@ const formatDate = (dateString) => {
 }
 
 //Рендерит комментарии
-const renderComments = () => {
+function renderComments() {
   blockComments.innerHTML = comments.map((comment, index) => {
     return `
-        <li class="comment" data-index='${index}'>
-        <div class="comment-header">
-          <div>${comment.author.name}</div>
-          <div>${formatDate(comment.date)}</div>
-        </div>
-        <div class="comment-body">
-        ${comment.isEdit ? `<textarea class="update-input">${comment.text}</textarea>` : `<div>${comment.text}</div>`}
-        </div>
-        <div class="comment-footer">
-          <div class="likes">
-            <span class="likes-counter">${comment.likes}</span>
-            <button data-index='${index}' class="${comment.isLike ? 'like-button -active-like' : 'like-button'}"></button> 
+          <li class="comment" data-index='${index}'>
+          <div class="comment-header">
+            <div>${comment.author.name}</div>
+            <div>${formatDate(comment.date)}</div>
           </div>
-        </div>
-        <button data-index='${index}' type="button" class= ${comment.isEdit ? '"save-btn"> Сохранить </button>' : '"update-btn">Редактировать</button>'}
-      </li>
-        `
+          <div class="comment-body">
+          ${comment.isEdit ? `<textarea class="update-input">${comment.text}</textarea>` : `<div>${comment.text}</div>`}
+          </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">${comment.likes}</span>
+              <button data-index='${index}' class="${comment.isLike ? 'like-button -active-like' : 'like-button'}"></button> 
+            </div>
+          </div>
+          <button data-index='${index}' type="button" class= ${comment.isEdit ? '"save-btn"> Сохранить </button>' : '"update-btn">Редактировать</button>'}
+        </li>
+          `
   }).join('');
-
 
   initLikeButtonsListener();
   initUpdateButtonsListener();
@@ -178,15 +210,20 @@ renderComments();
 
 //Получение комментариев из Апи
 const getComments = () => {
-  fetch('https://wedev-api.sky.pro/api/v1/ulyana-lazutina/comments', {
+  return fetch('https://wedev-api.sky.pro/api/v1/ulyana-lazutina/comments', {
     method: 'GET',
-  }).then((response) => {
-    response.json().then((responseData) => {
-      comments = responseData.comments;
-      renderComments();
+  })
+    .then((response) => {
+      document.querySelector('.loader').style.display = "none";
+      document.querySelector('.container').style.display = "flex";
+      return response.json()
     })
-  });
+    .then((responseData) => {
+      comments = responseData.comments;
+      return renderComments();
+    });
 }
+
 getComments();
 
 //Добавляет обработчик на кнопку Написать
@@ -202,6 +239,7 @@ function addComments() {
   const commentInputElement = document.querySelector('.add-form-text');
   isLoading = true;
   renderForm();
+  getComments();
   //Добавление в массив новые комменатарии
   fetch('https://wedev-api.sky.pro/api/v1/ulyana-lazutina/comments', {
     method: 'POST',
@@ -212,14 +250,18 @@ function addComments() {
         .replaceAll("END_QUOTE%", "</div>"),
       "name": nameInputElement.value
     }),
-  }).then((response) => {
-    response.json().then((responseData) => {
-      comments = responseData.comments;
-      getComments();
-      isLoading = false;
-      renderForm();
+  }).
+    then((response) => {
+      return response.json()
     })
-  })
+    .then((responseData) => {
+      comments = responseData.comments;
+      return getComments();
+    })
+    .then((data) => {
+      isLoading = false;
+      return renderForm();
+    })
 
   nameInputElement.value = '';
   commentInputElement.value = '';
