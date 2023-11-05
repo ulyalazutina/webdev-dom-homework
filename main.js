@@ -1,4 +1,3 @@
-"use strict";
 import { getCommentsApi, addCommentApi } from './api.js';
 import { renderCommentsModule, renderFormModule } from './render.js';
 import { initUpdateCommentListener, initUpdateButtonsListener, initSaveButtonsListeners, initLikeButtonsListener, deleteLastComment } from "./actionsWithComments.js";
