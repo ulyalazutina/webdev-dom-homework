@@ -1,18 +1,18 @@
 import { getCommentsApi, addCommentApi } from './api.js';
-import { renderCommentsModule, renderFormModule } from './render.js';
+import { renderCommentsModule, renderFormModule, renderLinkAuthorization } from './render.js';
 import { initUpdateCommentListener, initUpdateButtonsListener, initSaveButtonsListeners, initLikeButtonsListener, deleteLastComment } from "./actionsWithComments.js";
-let isLoading = false;
-let commentElementError = '';
-let nameElementError = '';
+export let isLoading = false;
+export let commentElementError = '';
+export let nameElementError = '';
 
 document.querySelector('.add-form').style.display = "none";
 
 //Нашла форму добавления комментариев
 const formAddComm = document.querySelector('.add-form');
-renderFormModule({ formAddComm, isLoading, text: addComments, nameElementError, commentElementError })
-
+// renderFormModule({ formAddComm, isLoading, text: addComments, nameElementError, commentElementError })
 //массив с комментариями
 let comments = [];
+renderLinkAuthorization();
 
 //Рендерит комментарии
 const renderComments = () => {
@@ -35,16 +35,16 @@ const getComments = () => {
 getComments();
 
 //Функция добавления комментария
-function addComments() {
+export function addComments() {
   //Нашла два инпута
   const nameInputElement = document.querySelector('.add-form-name');
   const commentInputElement = document.querySelector('.add-form-text');
   isLoading = true;
-  renderFormModule({ formAddComm, isLoading, text: addComments, nameElementError, commentElementError })
+  renderFormModule({ isLoading, text: addComments, nameElementError, commentElementError })
   getComments();
 
   //Добавление в массив новые комменатарии
-  addCommentApi({ text: commentInputElement.value, name: nameInputElement.value }).then((responseData) => {
+  addCommentApi({ text: commentInputElement.value }).then((responseData) => {
     comments = responseData.comments;
     return getComments();
   })
@@ -55,7 +55,6 @@ function addComments() {
       commentElementError = commentInputElement.value;
       isLoading = false;
       renderFormModule({ formAddComm, isLoading, text: addComments, nameElementError, commentElementError })
-      console.log('data');
     })
     .catch((error) => {
       if (error.message === "Сервер сломался") {
@@ -84,8 +83,8 @@ function addComments() {
 }
 
 //При нажатии на энтер добавляется новый комментарий
-formAddComm.addEventListener('keyup', (elem) => {
-  if (elem.keyCode === 13) {
-    addComments();
-  }
-})
+// formAddComm.addEventListener('keyup', (elem) => {
+//   if (elem.keyCode === 13) {
+//     addComments();
+//   }
+// })

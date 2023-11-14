@@ -1,7 +1,10 @@
 const blockComments = document.querySelector('.comments');
 
+import { login, setToken } from "./api.js";
 import { formatDate } from "./date.js";
-
+import { isLoading, nameElementError, commentElementError, addComments } from "./main.js";
+let userName;
+// isLoading
 export const renderCommentsModule = ({ comments }) => {
   blockComments.innerHTML = comments.map((comment, index) => {
     return `
@@ -33,32 +36,35 @@ function isActive() {
   writeButton.disabled = true;
   writeButton.style.backgroundColor = 'grey';
 
-  document.querySelector('.add-form-name').addEventListener('input', () => {
-    if (document.querySelector('.add-form-name').value.trim() !== '' && document.querySelector('.add-form-text').value.trim() !== '') {
-      writeButton.disabled = false;
-      writeButton.style.backgroundColor = '#bcec30';
-    }
-  });
+  // document.querySelector('.add-form-name').addEventListener('input', () => {
+  //   if (document.querySelector('.add-form-name').value.trim() !== '' && document.querySelector('.add-form-text').value.trim() !== '') {
+  //     writeButton.disabled = false;
+  //     writeButton.style.backgroundColor = '#bcec30';
+  //   }
+  // });
   document.querySelector('.add-form-text').addEventListener('input', () => {
-    if (document.querySelector('.add-form-name').value.trim() !== '' && document.querySelector('.add-form-text').value.trim() !== '') {
+    if ( document.querySelector('.add-form-text').value.trim() !== '') {
       writeButton.disabled = false;
       writeButton.style.backgroundColor = '#bcec30';
     }
   });
 }
+//document.querySelector('.add-form-name').value.trim() !== '' &&
 
-export const renderFormModule = ({ formAddComm, isLoading, text, nameElementError, commentElementError }) => {
+
+export const renderFormModule = ({isLoading, nameElementError, commentElementError, text}) => {
+  const formAdd = document.querySelector('.add-form');
   if (isLoading === true) {
     // console.log(isLoading);
-    return formAddComm.innerHTML =
+    return formAdd.innerHTML =
       ` <div>Комментарий добавляется </div>
         `
   } else {
     // console.log(isLoading);
-    formAddComm.innerHTML = ` <input
+    formAdd.innerHTML = ` <input
         type="text"
         class="add-form-name"
-        placeholder="Введите ваше имя" value = '${nameElementError}'
+        placeholder="${userName}" readonly value = '${nameElementError}'
       />
       <textarea
         type="textarea"
@@ -74,4 +80,52 @@ export const renderFormModule = ({ formAddComm, isLoading, text, nameElementErro
       .addEventListener('click', text);
     isActive();
   }
+}
+
+export const renderLinkAuthorization = () => {
+  ///////////////////////////////////////////////////////////////////
+  const form = document.querySelector('.add-form');
+
+  const linkHtml = `
+    <button type = "button" id = "auth_btn">Авторизоваться</button>
+  `;
+  form.innerHTML = linkHtml;
+  ///////////////////////////////////////////////////////////////////
+
+  ///////////////////////////////////////////////////////////////////
+  const authBtnElement = document.getElementById('auth_btn');
+
+  authBtnElement.addEventListener('click', () => {
+    const loginHtml = `
+    <h1>Авторизация</h1>
+    <input type="text" name="" id="login-input" placeholder="Логин">
+    <input type="text" name="" id="password-input" placeholder="Пароль">
+    <button type="button" id = "login-btn">Войти</button>
+    `;
+    form.innerHTML = loginHtml;
+    ///////////////////////////////////////////////////////////////////
+
+    ///////////////////////////////////////////////////////////////////
+    const loginBtn = document.getElementById('login-btn');
+
+    loginBtn.addEventListener('click', () => {
+      const loginInputElement = document.getElementById('login-input');
+      const passwordInputElement = document.getElementById('password-input');
+      login({
+        login: loginInputElement.value,
+        password: passwordInputElement.value,
+      })
+        .then((responseData) => {
+          setToken(responseData.user.token)
+          userName = responseData.user.name;
+          // console.log(responseData);
+        })
+        .then(() => {
+          renderFormModule({isLoading, nameElementError, commentElementError , text: addComments});
+        })
+    })
+
+    ///////////////////////////////////////////////////////////////////
+  })
+
 }
