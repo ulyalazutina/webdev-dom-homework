@@ -24,16 +24,15 @@ export const addCommentApi = ({ text }) => {
     return fetch(host, {
         method: 'POST',
         body: JSON.stringify({
-            text,
-            // "text": text
-            //     .replaceAll('<', '&lt;').replaceAll('>', '&gt;')
-            //     .replaceAll("%BEGIN_QUOTE", "<div class='quote'>")
-            //     .replaceAll("END_QUOTE%", "</div>")
-            //     .replaceAll("<div class='quote'>", "")
-            //     .replaceAll("</div>", ""),
+            "text": text
+                .replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+                .replaceAll("%BEGIN_QUOTE", "<div class='quote'>")
+                .replaceAll("END_QUOTE%", "</div>")
+                .replaceAll("<div class='quote'>", "")
+                .replaceAll("</div>", ""),
         }),
         headers: {
-            Authorization: token,
+            Authorization: `Bearer ${token}`,
         },
     })
         .then((response) => {
@@ -53,10 +52,7 @@ export const login = ({ login, password }) => {
         body: JSON.stringify({
             login,
             password,
-        }),
-        headers: {
-            Authorization: token,
-        },
+        })
     })
         .then((response) => {
             return response.json();

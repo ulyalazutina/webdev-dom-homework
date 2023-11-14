@@ -9,7 +9,7 @@ document.querySelector('.add-form').style.display = "none";
 
 //Нашла форму добавления комментариев
 const formAddComm = document.querySelector('.add-form');
-// renderFormModule({ formAddComm, isLoading, text: addComments, nameElementError, commentElementError })
+renderFormModule({ formAddComm, isLoading, text: addComments, nameElementError, commentElementError })
 //массив с комментариями
 let comments = [];
 renderLinkAuthorization();

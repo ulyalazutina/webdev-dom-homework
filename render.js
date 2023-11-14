@@ -87,7 +87,7 @@ export const renderLinkAuthorization = () => {
   const form = document.querySelector('.add-form');
 
   const linkHtml = `
-    <button type = "button" id = "auth_btn">Авторизоваться</button>
+  <p>Чтобы добавить комментарий, <button id='auth_btn'>авторизуйтесь</button></p>
   `;
   form.innerHTML = linkHtml;
   ///////////////////////////////////////////////////////////////////
@@ -118,7 +118,6 @@ export const renderLinkAuthorization = () => {
         .then((responseData) => {
           setToken(responseData.user.token)
           userName = responseData.user.name;
-          // console.log(responseData);
         })
         .then(() => {
           renderFormModule({isLoading, nameElementError, commentElementError , text: addComments});
