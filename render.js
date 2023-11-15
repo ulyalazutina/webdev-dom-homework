@@ -1,7 +1,7 @@
 const blockComments = document.querySelector(".comments");
 
 import { format } from "date-fns";
-import { login, setToken } from "./api.js";
+import { login, registration, setToken } from "./api.js";
 // import { formatDate } from "./date.js";
 import {
     isLoading,
@@ -121,16 +121,20 @@ export const renderLinkAuthorization = () => {
         const deleteButtonElement = document.querySelector(".add-form-row");
         deleteButtonElement.style.display = "none";
         const loginHtml = `
+    <div class="wrapper">
     <h1>Авторизация</h1>
     <div class="auth__container">
     <input type="text" name="" id="login-input" placeholder="Логин">
     <input type="password" name="" id="password-input" placeholder="Пароль">
     <button type="button" id = "login-btn">Войти</button>
+    <button type="button" id = "registration-btn">Регистрация</button>
+    </div>
     </div>
     `;
         form.innerHTML = loginHtml;
 
         const loginBtn = document.getElementById("login-btn");
+        const registrationBtn = document.getElementById("registration-btn");
 
         loginBtn.addEventListener("click", () => {
             const loginInputElement = document.getElementById("login-input");
@@ -161,6 +165,56 @@ export const renderLinkAuthorization = () => {
                         passwordInputElement.value = "";
                     }
                 });
+        });
+
+        registrationBtn.addEventListener("click", () => {
+            const wrappAuth = document.querySelector(".wrapper");
+            wrappAuth.style.display = "none";
+            const formElement = document.querySelector(".add-form");
+            formElement.innerHTML = `
+            <h2>Регистрация</h2>
+            <div class="reg_container">
+            <input type="text" name="" id="nameReg-input" placeholder="Имя">
+            <input type="text" name="" id="loginReg-input" placeholder="Логин">
+            <input type="password" name="" id="passwordReg-input" placeholder="Пароль">
+            <button type="button" id = "reg-btn">Зарегистрироваться</button>
+            </div>
+            `;
+            const regBtn = document.getElementById("reg-btn");
+
+            regBtn.addEventListener("click", () => {
+                const nameRegElement = document.getElementById("nameReg-input");
+                const loginRegElement =
+                    document.getElementById("loginReg-input");
+                const passRegElement =
+                    document.getElementById("passwordReg-input");
+                console.log(loginRegElement.value);
+                registration({
+                    name: nameRegElement.value,
+                    login: loginRegElement.value,
+                    password: passRegElement.value,
+                })
+                    .then((responseData) => {
+                        setToken(responseData.user.token);
+                        userName = responseData.user.name;
+                    })
+                    .then(() => {
+                        renderFormModule({
+                            isLoading,
+                            nameElementError,
+                            commentElementError,
+                            text: addComments,
+                        });
+                        commentsElement.style.display = "flex";
+                        deleteButtonElement.style.display = "flex";
+                    })
+                    .catch((error) => {
+                        if (error.message === "Пользователь с таким логином уже существует") {
+                            alert("Пользователь с таким логином уже существует");
+                        }
+                    })
+                    ;
+            });
         });
     });
 };

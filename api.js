@@ -1,5 +1,6 @@
 const host = "https://wedev-api.sky.pro/api/v2/ulyana-lazutina/comments";
 const userUrl = "https://wedev-api.sky.pro/api/user/login";
+const newUserUrl = "https://wedev-api.sky.pro/api/user";
 export let token;
 export const setToken = (newToken) => {
     token = newToken;
@@ -54,6 +55,23 @@ export const login = ({ login, password }) => {
     }).then((response) => {
         if (response.status === 400) {
             throw new Error("Неверный логин или пароль");
+        }
+        return response.json();
+    });
+};
+
+export const registration = ({ name, login, password }) => {
+    return fetch(newUserUrl, {
+        method: "POST",
+        body: JSON.stringify({
+            login,
+            name,
+            password,
+        }),
+    }).then((response) => {
+        console.log(response);
+        if (response.status === 400) {
+            throw new Error("Пользователь с таким логином уже существует");
         }
         return response.json();
     });
