@@ -1,17 +1,19 @@
 const blockComments = document.querySelector('.comments');
 
+import { format } from "date-fns";
 import { login, setToken } from "./api.js";
-import { formatDate } from "./date.js";
+// import { formatDate } from "./date.js";
 import { isLoading, nameElementError, commentElementError, addComments } from "./main.js";
 let userName;
 // isLoading
 export const renderCommentsModule = ({ comments }) => {
   blockComments.innerHTML = comments.map((comment, index) => {
+    const createDate = format(new Date(comment.date), 'yyyy-MM-dd hh.mm.ss');
     return `
             <li class="comment" data-index='${index}'>
             <div class="comment-header">
               <div>${comment.author.name}</div>
-              <div>${formatDate(comment.date)}</div>
+              <div>${createDate}</div>
             </div>
             <div class="comment-body">
             ${comment.isEdit ? `<textarea class="update-input">${comment.text}</textarea>` : `<div>${comment.text}</div>`}
