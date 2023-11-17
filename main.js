@@ -134,10 +134,3 @@ export function addComments() {
 //     addComments();
 //   }
 // })
-
-const add = (a, b) => {
-    if (a == b) {
-        return a + b;
-    }
-};
-add();

@@ -3,12 +3,7 @@ const blockComments = document.querySelector(".comments");
 import { format } from "date-fns";
 import { login, registration, setToken } from "./api.js";
 // import { formatDate } from "./date.js";
-import {
-    isLoading,
-    nameElementError,
-    commentElementError,
-    addComments,
-} from "./main.js";
+import { isLoading, commentElementError, addComments } from "./main.js";
 let userName;
 // isLoading
 export const renderCommentsModule = ({ comments }) => {
@@ -70,12 +65,7 @@ function isActive() {
 }
 //document.querySelector('.add-form-name').value.trim() !== '' &&
 
-export const renderFormModule = ({
-    isLoading,
-    nameElementError,
-    commentElementError,
-    text,
-}) => {
+export const renderFormModule = ({ isLoading, commentElementError, text }) => {
     const formAdd = document.querySelector(".add-form");
     if (isLoading === true) {
         // console.log(isLoading);
@@ -151,7 +141,6 @@ export const renderLinkAuthorization = () => {
                 .then(() => {
                     renderFormModule({
                         isLoading,
-                        nameElementError,
                         commentElementError,
                         text: addComments,
                     });
@@ -201,7 +190,6 @@ export const renderLinkAuthorization = () => {
                     .then(() => {
                         renderFormModule({
                             isLoading,
-                            nameElementError,
                             commentElementError,
                             text: addComments,
                         });
