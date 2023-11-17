@@ -209,11 +209,15 @@ export const renderLinkAuthorization = () => {
                         deleteButtonElement.style.display = "flex";
                     })
                     .catch((error) => {
-                        if (error.message === "Пользователь с таким логином уже существует") {
-                            alert("Пользователь с таким логином уже существует");
+                        if (
+                            error.message ===
+                            "Пользователь с таким логином уже существует"
+                        ) {
+                            alert(
+                                "Пользователь с таким логином уже существует",
+                            );
                         }
-                    })
-                    ;
+                    });
             });
         });
     });

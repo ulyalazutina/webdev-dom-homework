@@ -70,7 +70,7 @@ export function addComments() {
             comments = responseData.comments;
             return getComments();
         })
-        .then((data) => {
+        .then(() => {
             nameInputElement.value = "";
             commentInputElement.value = "";
             nameElementError = nameInputElement.value;
