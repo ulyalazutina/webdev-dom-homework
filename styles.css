@@ -217,3 +217,43 @@ body {
 .-loading-like {
   animation: rotating 2s linear infinite;
 }
+
+.auth__container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+#auth_btn {
+  background: transparent;
+  color: #bcec30;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+}
+
+#login-input, #password-input {
+  /* width: 300px; */
+  padding: 11px 22px;
+  font-size: 16px;
+  font-family: Helvetica;
+  border-radius: 8px;
+  border: none;
+}
+
+#login-btn {
+  margin: 0 auto;
+  display: flex;
+  font-size: 24px;
+  padding: 10px 20px;
+  background-color: #bcec30;
+  border: none;
+  border-radius: 18px;
+  cursor: pointer;
+  transition: background .4s;
+}
+
+#login-btn:hover {
+  background-color: #98bc2b;
+}
